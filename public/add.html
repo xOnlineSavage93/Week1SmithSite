@@ -3,19 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <title>Add to List</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
 </head>
+
 <body>
-  <main class="card">
+  <div class="container">
     <h1>Add to List</h1>
 
-    <form>
-      <input type="text" placeholder="New item (not saved)" />
-      <button type="submit">Add</button>
+    <form id="addForm" class="form">
+      <label for="newItem">New Item</label>
+      <input id="newItem" type="text" placeholder="Type a new favorite item..." required />
+      <button class="btn" type="submit">Add</button>
     </form>
 
+    <p id="addMsg" class="msg"></p>
 
-    <a href="index.html">← Back</a>
-  </main>
+    <div class="nav-links">
+      <a class="btn btn-secondary" href="/index.html">← Back</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("addForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("newItem").value.trim();
+
+      const res = await fetch("/api/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+
+      if (res.ok) {
+        document.getElementById("addMsg").textContent = "✅ Item added!";
+        document.getElementById("addMsg").className = "msg success";
+        window.location.href = "/";
+      } else {
+        document.getElementById("addMsg").textContent = "❌ Failed to add item.";
+        document.getElementById("addMsg").className = "msg error";
+      }
+    });
+  </script>
 </body>
 </html>
