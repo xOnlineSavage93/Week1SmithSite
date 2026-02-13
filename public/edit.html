@@ -46,11 +46,11 @@
       });
 
       if (res.ok) {
-        document.getElementById("editMsg").textContent = "✅ Saved!";
+        document.getElementById("editMsg").textContent = "Saved!";
         document.getElementById("editMsg").className = "msg success";
         window.location.href = "/";
       } else {
-        document.getElementById("editMsg").textContent = "❌ Failed to save.";
+        document.getElementById("editMsg").textContent = "Failed to save.";
         document.getElementById("editMsg").className = "msg error";
       }
     });
