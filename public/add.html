@@ -19,11 +19,15 @@
     <p id="addMsg" class="msg"></p>
 
     <div class="nav-links">
-      <a class="btn btn-secondary" href="/index.html">← Back</a>
+      <a class="btn btn-secondary" href="/">Back</a>
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    // Redirect if not logged in
+    const me = await (await fetch("/api/auth/me")).json();
+    if (!me.loggedIn) window.location.href = "/login.html?error=Please log in first";
+
     document.getElementById("addForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -35,13 +39,16 @@
         body: JSON.stringify({ name })
       });
 
+      const addMsg = document.getElementById("addMsg");
+
       if (res.ok) {
-        document.getElementById("addMsg").textContent = "✅ Item added!";
-        document.getElementById("addMsg").className = "msg success";
+        addMsg.textContent = "Item added!";
+        addMsg.className = "msg success";
         window.location.href = "/";
       } else {
-        document.getElementById("addMsg").textContent = "❌ Failed to add item.";
-        document.getElementById("addMsg").className = "msg error";
+        const data = await res.json().catch(() => ({}));
+        addMsg.textContent = data.error || "Failed to add item.";
+        addMsg.className = "msg error";
       }
     });
   </script>

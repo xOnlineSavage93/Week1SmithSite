@@ -2,34 +2,36 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Login</title>
+  <title>Register</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
-
 <body>
   <div class="container">
-    <h1>Login</h1>
+    <h1>Register</h1>
 
-    <form id="loginForm" class="form">
-      <label for="usernameOrEmail">Username or Email</label>
-      <input id="usernameOrEmail" required />
+    <form id="regForm" class="form">
+      <label for="username">Username</label>
+      <input id="username" required />
+
+      <label for="email">Email</label>
+      <input id="email" type="email" required />
 
       <label for="password">Password</label>
       <input id="password" type="password" required />
 
-      <button class="btn" type="submit">Login</button>
+      <button class="btn" type="submit">Create Account</button>
     </form>
 
     <p id="msg" class="msg"></p>
 
     <div class="nav-links">
-      <a class="btn btn-secondary" href="/register.html">Register</a>
-      <a class="btn btn-secondary" href="/">Back</a>
+      <a class="btn btn-secondary" href="/">← Back</a>
+      <a class="btn btn-secondary" href="/login.html">Login</a>
     </div>
   </div>
 
   <script>
-    // Show redirect error message if present
+    
     const params = new URLSearchParams(window.location.search);
     const error = params.get("error");
     if (error) {
@@ -38,16 +40,17 @@
       msg.className = "msg error";
     }
 
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    document.getElementById("regForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const usernameOrEmail = document.getElementById("usernameOrEmail").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usernameOrEmail, password })
+        body: JSON.stringify({ username, email, password })
       });
 
       const data = await res.json().catch(() => ({}));
@@ -56,11 +59,10 @@
         window.location.href = "/";
       } else {
         const msg = document.getElementById("msg");
-        msg.textContent = data.error || "Login failed.";
+        msg.textContent = data.error || "Registration failed.";
         msg.className = "msg error";
       }
     });
-
   </script>
 </body>
 </html>

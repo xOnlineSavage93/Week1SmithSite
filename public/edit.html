@@ -19,21 +19,48 @@
     <p id="editMsg" class="msg"></p>
 
     <div class="nav-links">
-      <a class="btn btn-secondary" href="/">← Back</a>
+      <a class="btn btn-secondary" href="/">Back</a>
     </div>
   </div>
 
-  <script>
+ 
+  <script type="module">
+    const msg = document.getElementById("editMsg");
+
+    //Must be logged in to edit
+    const meRes = await fetch("/api/auth/me", { credentials: "same-origin" });
+    const me = await meRes.json();
+
+    if (!me.loggedIn) {
+      window.location.href = "/login.html?error=Please log in to edit items";
+    }
+
+    //Get id from URL
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
-    async function loadOne() {
-      const res = await fetch("/api/items");
-      const items = await res.json();
-      const item = items.find(x => x._id === id);
-      if (item) document.getElementById("editName").value = item.name;
+    if (!id) {
+      msg.textContent = "Missing item id.";
+      msg.className = "msg error";
+      throw new Error("Missing id");
     }
 
+    // Load current value
+    async function loadOne() {
+      const res = await fetch("/api/items", { credentials: "same-origin" });
+      const items = await res.json();
+      const item = items.find(x => x._id === id);
+
+      if (!item) {
+        msg.textContent = "Item not found.";
+        msg.className = "msg error";
+        return;
+      }
+
+      document.getElementById("editName").value = item.name;
+    }
+
+    //Save update
     document.getElementById("editForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -41,17 +68,26 @@
 
       const res = await fetch(`/api/items/${id}`, {
         method: "PUT",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name })
       });
 
+      // If session expired or not logged in, send to login
+      if (res.status === 401) {
+        window.location.href = "/login.html?error=Please log in again";
+        return;
+      }
+
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
-        document.getElementById("editMsg").textContent = "Saved!";
-        document.getElementById("editMsg").className = "msg success";
+        msg.textContent = "Saved!";
+        msg.className = "msg success";
         window.location.href = "/";
       } else {
-        document.getElementById("editMsg").textContent = "Failed to save.";
-        document.getElementById("editMsg").className = "msg error";
+        msg.textContent = data.error || "Failed to save.";
+        msg.className = "msg error";
       }
     });
 
