@@ -45,6 +45,14 @@ p {
     margin-top: 25px;
 }
 
+/*this gives gaps between buttons*/
+.item-actions
+{
+  display: flex;
+  gap: 12px;      /*this gives the sapce between the update and delete button*/
+  margin-top:8px; /*this gives the space between the name and buttons*/
+}
+
 /* Links styled as buttons */
 .nav-links {
     margin-top: 30px;

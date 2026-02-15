@@ -32,8 +32,9 @@
     const me = await meRes.json();
 
     if (!me.loggedIn) {
-      window.location.href = "/login.html?error=Please log in to edit items";
-    }
+    window.location.href = "/login.html?error=Please log in to edit items";
+    return;
+}
 
     //Get id from URL
     const params = new URLSearchParams(window.location.search);
